@@ -5,7 +5,7 @@ class ProductDetailScreen extends StatelessWidget {
   // final double price;
   //
   // ProductDetailScreen(this.title, this.price);
-  static const routeName = 'product-detail';
+  static const routeName = '/product-detail';
 
   @override
   Widget build(BuildContext context) {
