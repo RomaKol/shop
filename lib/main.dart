@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 import './screens/products_overview_screen.dart';
 import './screens/product_detail_screen.dart';
+import './screens/cart_screen.dart';
 import './providers/products.dart';
 import './providers/cart.dart';
 
@@ -27,11 +28,17 @@ class MyApp extends StatelessWidget {
           primarySwatch: Colors.green,
           accentColor: Colors.redAccent,
           fontFamily: 'Lato',
+          primaryTextTheme: TextTheme(
+            headline6: TextStyle(
+              color: Colors.white,
+            ),
+          ),
         ),
         home: ProductsOverviewScreen(),
         routes: {
           ProductDetailScreen.routeName: (BuildContext context) =>
               ProductDetailScreen(),
+          CartScreen.routeName: (BuildContext context) => CartScreen(),
         },
       ),
     );
