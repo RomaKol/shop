@@ -67,4 +67,9 @@ class Cart with ChangeNotifier {
     this._items.remove(productId);
     notifyListeners();
   }
+
+  void clear() {
+    this._items = {};
+    notifyListeners();
+  }
 }
