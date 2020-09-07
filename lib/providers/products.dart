@@ -62,4 +62,14 @@ class Products with ChangeNotifier {
     // this.items.insert(0, newProduct);
     notifyListeners();
   }
+
+  void updateProduct(String id, Product newProduct) {
+    final prodIndex = this._items.indexWhere((prod) => prod.id == id);
+    if (prodIndex >= 0) {
+      this._items[prodIndex] = newProduct;
+      notifyListeners();
+    } else {
+      print('...');
+    }
+  }
 }
