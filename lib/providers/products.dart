@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -52,28 +53,30 @@ class Products with ChangeNotifier {
     return this._items.firstWhere((Product product) => product.id == id);
   }
 
-  void addProduct(Product product) {
+  Future<void> addProduct(Product product) {
     const url = 'https://flutter-shop-93a5a.firebaseio.com/products.json';
-    http.post(
-      url,
-      body: json.encode({
-        'title': product.title,
-        'description': product.description,
-        'imageUrl': product.imageUrl,
-        'price': product.price,
-        'isFavorite': product.isFavorite,
-      }),
-    );
-    final Product newProduct = Product(
-      title: product.title,
-      description: product.description,
-      price: product.price,
-      imageUrl: product.imageUrl,
-      id: DateTime.now().toString(),
-    );
-    this._items.add(newProduct);
-    // this.items.insert(0, newProduct); // at the start of the end
-    notifyListeners();
+    return http
+        .post(url,
+            body: json.encode({
+              'title': product.title,
+              'description': product.description,
+              'imageUrl': product.imageUrl,
+              'price': product.price,
+              'isFavorite': product.isFavorite,
+            }))
+        .then((http.Response response) {
+      final body = json.decode(response.body);
+      final Product newProduct = Product(
+        title: product.title,
+        description: product.description,
+        price: product.price,
+        imageUrl: product.imageUrl,
+        id: body['name'],
+      );
+      this._items.add(newProduct);
+      // this.items.insert(0, newProduct); // at the start of the end
+      notifyListeners();
+    });
   }
 
   void updateProduct(String id, Product newProduct) {
