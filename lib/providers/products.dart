@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
+import '../models/http_exception.dart';
 import './product.dart';
 
 class Products with ChangeNotifier {
@@ -108,13 +109,15 @@ class Products with ChangeNotifier {
   Future<void> updateProduct(String id, Product newProduct) async {
     final prodIndex = this._items.indexWhere((prod) => prod.id == id);
     if (prodIndex >= 0) {
-      final url1 = 'https://flutter-shop-93a5a.firebaseio.com/products/$id.json';
-      await http.patch(url1, body: json.encode({
-        'title': newProduct.title,
-        'description': newProduct.description,
-        'price': newProduct.price,
-        'imageUrl': newProduct.imageUrl,
-      }));
+      final url1 =
+          'https://flutter-shop-93a5a.firebaseio.com/products/$id.json';
+      await http.patch(url1,
+          body: json.encode({
+            'title': newProduct.title,
+            'description': newProduct.description,
+            'price': newProduct.price,
+            'imageUrl': newProduct.imageUrl,
+          }));
       this._items[prodIndex] = newProduct;
       notifyListeners();
     } else {
@@ -122,8 +125,21 @@ class Products with ChangeNotifier {
     }
   }
 
-  void deleteProduct(String id) {
-    this._items.removeWhere((prod) => prod.id == id);
+  Future<void> deleteProduct(String id) async {
+    final url1 = 'https://flutter-shop-93a5a.firebaseio.com/products/$id.json';
+    final existingProductIndex =
+        this._items.indexWhere((prod) => prod.id == id);
+    Product existingProduct = this._items[existingProductIndex];
+    // this._items.removeWhere((prod) => prod.id == id);
+
+    this._items.removeAt(existingProductIndex);
     notifyListeners();
+    final response = await http.delete(url1);
+    if (response.statusCode >= 400) {
+      this._items.insert(existingProductIndex, existingProduct);
+      notifyListeners();
+      throw HttpException('Could not delete product.');
+    }
+    existingProduct = null;
   }
 }
