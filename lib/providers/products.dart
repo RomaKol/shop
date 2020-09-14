@@ -6,6 +6,8 @@ import 'package:http/http.dart' as http;
 import './product.dart';
 
 class Products with ChangeNotifier {
+  static const url = 'https://flutter-shop-93a5a.firebaseio.com/products.json';
+
   List<Product> _items = [
     Product(
       id: 'p1',
@@ -53,8 +55,17 @@ class Products with ChangeNotifier {
     return this._items.firstWhere((Product product) => product.id == id);
   }
 
+  Future<void> fetchAndSetProducts() async {
+    try {
+      final response = await http.get(url);
+      print(json.decode(response.body));
+    } catch (error) {
+      throw (error);
+    }
+  }
+
   Future<void> addProduct(Product product) {
-    const url = 'https://flutter-shop-93a5a.firebaseio.com/products.json';
+    // const url = 'https://flutter-shop-93a5a.firebaseio.com/products.json';
     return http
         .post(url,
             body: json.encode({
@@ -76,6 +87,8 @@ class Products with ChangeNotifier {
       this._items.add(newProduct);
       // this.items.insert(0, newProduct); // at the start of the end
       notifyListeners();
+    }).catchError((error) {
+      throw error;
     });
   }
 
