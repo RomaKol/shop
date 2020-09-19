@@ -114,6 +114,10 @@ class _AuthCardState extends State<AuthCard> {
     });
     if (this._authMode == AuthMode.Login) {
       //  ToDo Log in
+      await Provider.of<Auth>(context, listen: false).login(
+        this._authData['email'],
+        this._authData['password'],
+      );
     } else {
       //  ToDo Sign up
       await Provider.of<Auth>(context, listen: false).signup(
