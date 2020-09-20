@@ -24,8 +24,11 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(
           create: (BuildContext context) => Auth(),
         ),
-        ChangeNotifierProvider(
-          create: (BuildContext context) => Products(),
+        ChangeNotifierProxyProvider<Auth, Products>(
+          update: (BuildContext context, auth, previousProducts) => Products(
+            auth.token,
+            previousProducts == null ? [] : previousProducts.items,
+          ),
         ),
         ChangeNotifierProvider(
           create: (BuildContext context) => Cart(),
@@ -34,30 +37,32 @@ class MyApp extends StatelessWidget {
           create: (BuildContext context) => Orders(),
         ),
       ],
-      child: MaterialApp(
-        title: 'My shop',
-        theme: ThemeData(
-          primarySwatch: Colors.green,
-          accentColor: Colors.redAccent,
-          fontFamily: 'Lato',
-          primaryTextTheme: TextTheme(
-            headline6: TextStyle(
-              color: Colors.white,
+      child: Consumer<Auth>(
+        builder: (ctx, auth, child) => MaterialApp(
+          title: 'My shop',
+          theme: ThemeData(
+            primarySwatch: Colors.green,
+            accentColor: Colors.redAccent,
+            fontFamily: 'Lato',
+            primaryTextTheme: TextTheme(
+              headline6: TextStyle(
+                color: Colors.white,
+              ),
             ),
           ),
+          // home: ProductsOverviewScreen(),
+          home: auth.isAuth ? ProductsOverviewScreen() : AuthScreen(),
+          routes: {
+            ProductDetailScreen.routeName: (BuildContext context) =>
+                ProductDetailScreen(),
+            CartScreen.routeName: (BuildContext context) => CartScreen(),
+            OrdersScreen.routeName: (BuildContext context) => OrdersScreen(),
+            UserProductsScreen.routeName: (BuildContext context) =>
+                UserProductsScreen(),
+            EditProductScreen.routeName: (BuildContext context) =>
+                EditProductScreen(),
+          },
         ),
-        // home: ProductsOverviewScreen(),
-        home: AuthScreen(),
-        routes: {
-          ProductDetailScreen.routeName: (BuildContext context) =>
-              ProductDetailScreen(),
-          CartScreen.routeName: (BuildContext context) => CartScreen(),
-          OrdersScreen.routeName: (BuildContext context) => OrdersScreen(),
-          UserProductsScreen.routeName: (BuildContext context) =>
-              UserProductsScreen(),
-          EditProductScreen.routeName: (BuildContext context) =>
-              EditProductScreen(),
-        },
       ),
     );
   }
