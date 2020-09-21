@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:async';
 import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
 import '../models/http_exception.dart';
@@ -7,6 +8,7 @@ class Auth with ChangeNotifier {
   String _token;
   DateTime _expiryDate;
   String _userId;
+  Timer _authTimer;
 
   bool get isAuth {
     return token != null;
@@ -51,6 +53,7 @@ class Auth with ChangeNotifier {
           ),
         ),
       );
+      this._autoLogout();
       notifyListeners();
     } catch (error) {
       throw error;
@@ -69,6 +72,18 @@ class Auth with ChangeNotifier {
     this._token = null;
     this._userId = null;
     this._expiryDate = null;
+    if (this._authTimer != null) {
+      this._authTimer.cancel();
+      this._authTimer = null;
+    }
     notifyListeners();
+  }
+
+  void _autoLogout() {
+    if (this._authTimer != null) {
+      this._authTimer.cancel();
+    }
+    final timeToExpiry = this._expiryDate.difference(DateTime.now()).inSeconds;
+    this._authTimer = Timer(Duration(seconds: timeToExpiry), logout);
   }
 }
