@@ -6,8 +6,6 @@ import '../models/http_exception.dart';
 import './product.dart';
 
 class Products with ChangeNotifier {
-  static const url = 'https://flutter-shop-93a5a.firebaseio.com/products.json';
-
   List<Product> _items = [
     // Product(
     //   id: 'p1',
@@ -59,8 +57,10 @@ class Products with ChangeNotifier {
   }
 
   Future<void> fetchAndSetProducts() async {
+    final String url =
+        'https://flutter-shop-93a5a.firebaseio.com/products.json?auth=${this.authToken}';
     try {
-      final response = await http.get('$url?auth=${this.authToken}');
+      final response = await http.get(url);
       final extractedData = json.decode(response.body) as Map<String, dynamic>;
       if (extractedData == null) {
         return;
@@ -84,7 +84,8 @@ class Products with ChangeNotifier {
   }
 
   Future<void> addProduct(Product product) {
-    // const url = 'https://flutter-shop-93a5a.firebaseio.com/products.json';
+    final String url =
+        'https://flutter-shop-93a5a.firebaseio.com/products.json?auth=${this.authToken}';
     return http
         .post(url,
             body: json.encode({
@@ -114,9 +115,9 @@ class Products with ChangeNotifier {
   Future<void> updateProduct(String id, Product newProduct) async {
     final prodIndex = this._items.indexWhere((prod) => prod.id == id);
     if (prodIndex >= 0) {
-      final url1 =
-          'https://flutter-shop-93a5a.firebaseio.com/products/$id.json';
-      await http.patch(url1,
+      final url =
+          'https://flutter-shop-93a5a.firebaseio.com/products/$id.json?auth=${this.authToken}';
+      await http.patch(url,
           body: json.encode({
             'title': newProduct.title,
             'description': newProduct.description,
@@ -131,7 +132,8 @@ class Products with ChangeNotifier {
   }
 
   Future<void> deleteProduct(String id) async {
-    final url1 = 'https://flutter-shop-93a5a.firebaseio.com/products/$id.json';
+    final url =
+        'https://flutter-shop-93a5a.firebaseio.com/products/$id.json?auth=${this.authToken}';
     final existingProductIndex =
         this._items.indexWhere((prod) => prod.id == id);
     Product existingProduct = this._items[existingProductIndex];
@@ -139,7 +141,7 @@ class Products with ChangeNotifier {
 
     this._items.removeAt(existingProductIndex);
     notifyListeners();
-    final response = await http.delete(url1);
+    final response = await http.delete(url);
     if (response.statusCode >= 400) {
       this._items.insert(existingProductIndex, existingProduct);
       notifyListeners();
