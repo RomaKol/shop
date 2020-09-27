@@ -125,12 +125,11 @@ class _AuthCardState extends State<AuthCard>
         curve: Curves.linear,
       ),
     );
-    this._heightAnimation.addListener(() => setState(() {}));
+    // this._heightAnimation.addListener(() => setState(() {}));
   }
 
   @override
   void dispose() {
-    // TODO: implement dispose
     super.dispose();
     this._animationController.dispose();
   }
@@ -221,14 +220,18 @@ class _AuthCardState extends State<AuthCard>
         borderRadius: BorderRadius.circular(10.0),
       ),
       elevation: 8.0,
-      child: Container(
-        // height: this._authMode == AuthMode.Signup ? 320 : 260,
-        height: this._heightAnimation.value.height,
-        constraints: BoxConstraints(
-            // minHeight: this._authMode == AuthMode.Signup ? 320 : 260),
-            minHeight: this._heightAnimation.value.height),
-        width: deviceSize.width * 0.75,
-        padding: EdgeInsets.all(16.0),
+      child: AnimatedBuilder(
+        animation: this._heightAnimation,
+        builder: (ctx, ch) => Container(
+          // height: this._authMode == AuthMode.Signup ? 320 : 260,
+          height: this._heightAnimation.value.height,
+          constraints: BoxConstraints(
+              // minHeight: this._authMode == AuthMode.Signup ? 320 : 260),
+              minHeight: this._heightAnimation.value.height),
+          width: deviceSize.width * 0.75,
+          padding: EdgeInsets.all(16.0),
+          child: ch,
+        ),
         child: Form(
           key: this._formKey,
           child: SingleChildScrollView(
