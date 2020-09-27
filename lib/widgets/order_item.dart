@@ -18,27 +18,39 @@ class _OrderItemState extends State<OrderItem> {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      margin: EdgeInsets.all(10),
-      child: Column(
-        children: <Widget>[
-          ListTile(
-            title: Text('\$${this.widget.order.amount}'),
-            subtitle: Text(DateFormat('dd/MM/yyyy HH:mm')
-                .format(this.widget.order.dateTime)),
-            trailing: IconButton(
-              icon:
-                  Icon(this._expanded ? Icons.expand_less : Icons.expand_more),
-              onPressed: () {
-                setState(() {
-                  this._expanded = !this._expanded;
-                });
-              },
+    return AnimatedContainer(
+      duration: Duration(
+        milliseconds: 300,
+      ),
+      height: this._expanded
+          ? min(widget.order.products.length * 20.0 + 110, 200)
+          : 95,
+      child: Card(
+        margin: EdgeInsets.all(10),
+        child: Column(
+          children: <Widget>[
+            ListTile(
+              title: Text('\$${this.widget.order.amount}'),
+              subtitle: Text(DateFormat('dd/MM/yyyy HH:mm')
+                  .format(this.widget.order.dateTime)),
+              trailing: IconButton(
+                icon: Icon(
+                    this._expanded ? Icons.expand_less : Icons.expand_more),
+                onPressed: () {
+                  setState(() {
+                    this._expanded = !this._expanded;
+                  });
+                },
+              ),
             ),
-          ),
-          if (this._expanded)
-            Container(
-              height: min(widget.order.products.length * 20.0 + 10, 100),
+            // if (this._expanded)
+            AnimatedContainer(
+              duration: Duration(
+                milliseconds: 300,
+              ),
+              height: this._expanded
+                  ? min(widget.order.products.length * 20.0 + 10, 100)
+                  : 0,
               padding: EdgeInsets.symmetric(
                 horizontal: 15,
                 vertical: 5,
@@ -66,7 +78,8 @@ class _OrderItemState extends State<OrderItem> {
                 itemCount: widget.order.products.length,
               ),
             ),
-        ],
+          ],
+        ),
       ),
     );
   }
